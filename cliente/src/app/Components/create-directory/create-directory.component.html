@@ -1,0 +1,28 @@
+<div class="dialog">
+  <h2>Create new directory</h2>
+  <form (ngSubmit)="this.onSubmit()" class="example-form">
+    <mat-form-field class="form-control" appearance="fill">
+      <mat-label>Nombre de la carpeta</mat-label>
+      <input name="directoryName" [(ngModel)]="this.directoryName" matInput />
+      <mat-error *ngIf="directoryNameFormControl.hasError('required')">
+        Directory name is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <button
+      *ngIf="!isNameRepeated"
+      type="submit"
+      class="submit-btn"
+      mat-flat-button
+      color="primary"
+    >
+      Create directory
+    </button>
+    <div *ngIf="isNameRepeated">
+      <p>Would you like to overwrite the directory?</p>
+      <button mat-button (click)="this.onSubmit(true)" color="primary">
+        Yes
+      </button>
+      <button mat-button (click)="closeDialog()" color="warn">No</button>
+    </div>
+  </form>
+</div>

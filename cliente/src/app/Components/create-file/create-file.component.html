@@ -1,0 +1,35 @@
+<div class="dialog">
+  <h2>Create new file</h2>
+  <form (ngSubmit)="this.onSubmit()" class="example-form">
+    <mat-form-field class="form-control" appearance="fill">
+      <mat-label>File name</mat-label>
+      <input name="fileName" [(ngModel)]="this.fileName" matInput />
+      <mat-error *ngIf="fileNameFormControl.hasError('required')">
+        File name is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field class="form-control" appearance="fill">
+      <mat-label>File extension</mat-label>
+      <input name="fileExtension" [(ngModel)]="this.fileExtension" matInput />
+      <mat-error *ngIf="fileExtensionFormControl.hasError('required')">
+        File extension is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <button
+      *ngIf="!isNameRepeated"
+      type="submit"
+      class="submit-btn"
+      mat-flat-button
+      color="primary"
+    >
+      Create File
+    </button>
+    <div *ngIf="isNameRepeated">
+      <p>Would you like to overwrite the file contents?</p>
+      <button mat-button (click)="this.onSubmit(true)" color="primary">
+        Yes
+      </button>
+      <button mat-button (click)="closeDialog()" color="warn">No</button>
+    </div>
+  </form>
+</div>

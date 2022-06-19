@@ -1,0 +1,16 @@
+<div class="container">
+  <div class="header">
+    <h1><mat-icon> people </mat-icon> Share with other people</h1>
+  </div>
+  <div class="user-container">
+    <button
+      mat-flat-button
+      class="drive-btn"
+      *ngFor="let user of users"
+      (click)="onClickShareFile(user)"
+    >
+      <mat-icon>people</mat-icon>
+      &nbsp; {{ user }}
+    </button>
+  </div>
+</div>

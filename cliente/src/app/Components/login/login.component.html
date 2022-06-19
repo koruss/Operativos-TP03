@@ -1,0 +1,74 @@
+<div class="container">
+  <div class="login">
+    <div class="login-input">
+      <h1><mat-icon>lock</mat-icon> Sign In</h1>
+      <!-- Input for Username -->
+      <mat-form-field class="form-field" appearance="fill">
+        <mat-label>Username</mat-label>
+        <input
+          matInput
+          [formControl]="loginFormControl"
+          type="text"
+          [(ngModel)]="user.username"
+        />
+
+        <!-- Validations -->
+        <mat-error *ngIf="loginFormControl.hasError('required')">
+          Username is <strong>required</strong>
+        </mat-error>
+
+        <!-- Clear Button -->
+        <button
+          *ngIf="user.username"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="user.username = ''"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <!-- Input for password -->
+      <mat-form-field class="form-field" appearance="fill">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          type="password"
+          [formControl]="passwordFormControl"
+          [(ngModel)]="user.password"
+        />
+
+        <!-- Validations -->
+        <mat-error *ngIf="passwordFormControl.hasError('required')">
+          Password is <strong>required</strong>
+        </mat-error>
+
+        <!-- Clear Button -->
+        <button
+          *ngIf="user.password"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="user.password = ''"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <!-- Interaction Buttons -->
+      <div class="login-buttons">
+        <a (click)="openDialog()">Register</a>
+        <a href="#">Forgot Password?</a>
+        <button
+          (click)="this.onSignInClick()"
+          mat-raised-button
+          color="primary"
+        >
+          Sign-In
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="wallpaper"></div>
+</div>

@@ -1,0 +1,83 @@
+<div class="container">
+  <div class="wallpaper"></div>
+  <div class="sign-up">
+    <h1>Sign-Up</h1>
+    <div class="sign-up-input">
+      <!-- Input for Username -->
+      <mat-form-field class="form-field" appearance="fill">
+        <mat-label>Username</mat-label>
+        <input
+          matInput
+          [formControl]="loginFormControl"
+          type="text"
+          [(ngModel)]="user.username"
+        />
+
+        <!-- Validators -->
+        <mat-error *ngIf="loginFormControl.hasError('required')">
+          Username is <strong>required</strong>
+        </mat-error>
+
+        <!-- Clear Button -->
+        <button
+          *ngIf="user.username"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="user.username = ''"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <!-- Input for Password -->
+      <mat-form-field class="form-field" appearance="fill">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          type="password"
+          [formControl]="passwordFormControl"
+          [(ngModel)]="user.password"
+        />
+
+        <!-- Validators -->
+        <mat-error *ngIf="passwordFormControl.hasError('required')">
+          Password is <strong>required</strong>
+        </mat-error>
+
+        <!-- Clear Button -->
+        <button
+          *ngIf="user.password"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="user.password = ''"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <!-- Input for byte Size -->
+      <mat-form-field class="form-field" appearance="fill">
+        <mat-label>Size</mat-label>
+        <input
+          matInput
+          type="number"
+          [formControl]="sizeFormControl"
+          [(ngModel)]="user.allocatedBytes"
+        />
+        <span matSuffix>bytes</span>
+
+        <!-- Validators -->
+        <mat-error *ngIf="sizeFormControl.hasError('required')">
+          Size is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Sign-In Button -->
+      <button (click)="onSignUpClick()" mat-raised-button color="primary">
+        Sign Up
+      </button>
+    </div>
+  </div>
+</div>

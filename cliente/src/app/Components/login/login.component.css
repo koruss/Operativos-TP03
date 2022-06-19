@@ -1,0 +1,59 @@
+a {
+  text-decoration: none;
+  cursor: pointer;
+  color: #5518ab;
+  font-size: 0.9em;
+}
+
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70%;
+  height: 90%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  overflow: hidden;
+  background-color: var(--base-white);
+  border-radius: 20px;
+}
+
+.wallpaper {
+  position: relative;
+  height: 100%;
+  width: 50%;
+  background-image: url("https://cdn.dribbble.com/users/2908303/screenshots/15442512/media/40a3488dba90e0e667771aecf049e724.png?compress=1&resize=1200x900");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.login {
+  position: relative;
+  height: 100%;
+  width: 50%;
+  background-image: url("https://cdn.dribbble.com/users/3028563/screenshots/16771375/media/363c7160e3b745ebbad6e2d06983b070.jpg?compress=1&resize=1200x900");
+  background-position: top left;
+  background-repeat: no-repeat;
+  background-size: 20%;
+}
+
+.login-input {
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.login-buttons {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin: 0.5em;
+}

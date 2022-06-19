@@ -1,4 +1,9 @@
 ### Python template
+
+# Manually added
+*.json
+virtualDisk
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

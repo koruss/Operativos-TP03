@@ -1,0 +1,39 @@
+<div class="container">
+  <div class="header">
+    <button class="back-btn" (click)="onClickChangeDirBackward()">
+      <mat-icon>keyboard_backspace</mat-icon>
+    </button>
+    <h2>{{ directory.name === "root" ? "My Drive" : directory.name }}</h2>
+  </div>
+  <div class="drives">
+    <div *ngIf="directories.length != 0" class="drives">
+      <button
+        mat-flat-button
+        *ngFor="let dir of directories"
+        class="drive-btn"
+        (click)="onClickChangeDirForward(dir.name)"
+      >
+        <mat-icon>folder</mat-icon>
+        &nbsp; {{ dir.name }}
+      </button>
+    </div>
+  </div>
+  <div class="footer">
+    <button
+      *ngIf="move"
+      mat-raised-button
+      color="primary"
+      (click)="OnClickMove()"
+    >
+      Move Here
+    </button>
+    <button
+      *ngIf="!move"
+      mat-raised-button
+      color="primary"
+      (click)="OnClickCopy()"
+    >
+      Copy Here
+    </button>
+  </div>
+</div>

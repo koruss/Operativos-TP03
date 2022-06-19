@@ -1,0 +1,46 @@
+<div class="container">
+  <div class="wallpaper"></div>
+  <div class="sign-up">
+    <h1>Ingresar datos del Filesystem</h1>
+    <div class="sign-up-input">
+      <!-- Input for Username -->
+      <mat-form-field class="form-field" appearance="fill">
+        <mat-label>Tamaño de sectores</mat-label>
+        <input
+          matInput
+          [formControl]="sectorSizeControl"
+          type="number"
+          [(ngModel)]="fileSystem.sector_size"
+        />
+        <span matSuffix>bytes</span>
+
+        <!-- Validators -->
+        <mat-error *ngIf="sectorSizeControl.hasError('required')">
+          El tamaño de los sectores es <strong>requerido</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Input for byte Size -->
+      <mat-form-field class="form-field" appearance="fill">
+        <mat-label>Cantidad de sectores</mat-label>
+        <input
+          matInput
+          type="number"
+          [formControl]="sectorAmntControl"
+          [(ngModel)]="fileSystem.sector_amount"
+        />
+
+        <!-- Validators -->
+        <mat-error *ngIf="sectorAmntControl.hasError('required')">
+          La cantidad de sectores es <strong>requerida</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Sign-In Button -->
+      <button (click)="onSubmitClick()" mat-raised-button color="primary">
+        Crear Filesystem
+      </button>
+    </div>
+  </div>
+</div>
+

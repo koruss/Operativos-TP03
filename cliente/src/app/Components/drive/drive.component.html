@@ -1,0 +1,211 @@
+<div class="container">
+  <!-- Left Section -->
+  <div class="nav-container">
+    <!-- Main Logo Button -->
+    <button
+      mat-flat-button
+      class="logo"
+      (click)="onClickChangeDir('root')"
+    ></button>
+
+    <!-- Nav Bar -->
+    <nav>
+      <button
+        mat-flat-button
+        [matMenuTriggerFor]="menu"
+        class="nav-button create"
+      >
+        <mat-icon> add_box </mat-icon> <span>Add</span>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button (click)="this.openCreateDirectoryDialog()" mat-menu-item>
+          <mat-icon> folder </mat-icon> Carpeta
+        </button>
+        <button (click)="this.openCreateFileDialog()" mat-menu-item>
+          <mat-icon> article </mat-icon>Archivo
+        </button>
+        <button (click)="this.openUploadFileDialog()" mat-menu-item>
+          <mat-icon> upload_file </mat-icon>Subir Archivo
+        </button>
+        <button mat-menu-item>
+          <mat-icon>drive_folder_upload</mat-icon> Subir Carpeta
+        </button>
+      </mat-menu>
+      <button
+        mat-flat-button
+        class="nav-button mov"
+        (click)="onClickChangeDir('root')"
+      >
+        <mat-icon> save </mat-icon> <span>My Drive</span>
+      </button>
+      <button
+        mat-flat-button
+        class="nav-button mov"
+        (click)="onClickChangeDir('shared')"
+      >
+        <mat-icon> people </mat-icon> <span>Shared</span>
+      </button>
+
+      <!-- Capacity Card -->
+      <div class="capacity">
+        <div class="title">
+          <mat-icon> filter_drama </mat-icon><a> Storage </a>
+        </div>
+        <mat-progress-bar
+          mode="determinate"
+          value="{{ this.spacePercentage }}"
+        ></mat-progress-bar>
+        <span class="label">
+          {{ space.usedSpace }}B out of {{ space.totalSpace }}B used
+        </span>
+      </div>
+    </nav>
+  </div>
+  <!-- Top Deck -->
+  <main>
+    <div class="top-deck">
+      <!-- Search bar -->
+      <mat-form-field appearance="outline" class="search-bar">
+        <mat-label>Search on drive</mat-label>
+        <input matInput />
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+
+      <!-- Logout Button -->
+      <button mat-fab color="primary" (click)="onClickLogout()">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+
+    <!-- Path Display -->
+    <div class="path">
+      <a *ngIf="path[0] == 'root'"> <mat-icon> save </mat-icon>&nbsp;&nbsp; </a>
+      <a *ngIf="path[0] == 'shared'">
+        <mat-icon> people </mat-icon>&nbsp;&nbsp;
+      </a>
+      <a
+        *ngFor="let segment of path"
+        (click)="onClickChangeDirBackward(segment)"
+      >
+        <span *ngIf="segment != 'root' && segment != 'shared'">
+          &nbsp; > &nbsp;
+        </span>
+        {{ segment === "root" ? "My Drive" : segment }}</a
+      >
+    </div>
+
+    <div class="navegation-section">
+      <div
+        *ngIf="directories.length == 0 && files.length == 0"
+        class="no-files"
+      ></div>
+      <!-- Directories Section -->
+      <div *ngIf="directories.length != 0">
+        <h2>Directories</h2>
+        <div class="directories">
+          <!-- Button for Directory -->
+          <button
+            mat-flat-button
+            class="directory"
+            *ngFor="let directory of directories"
+            [matMenuTriggerFor]="menuDirectory"
+            [matMenuTriggerData]="{ directory }"
+            (click)="onClickChangeDirForward(directory.name)"
+          >
+            <mat-icon> folder </mat-icon>
+            <span>{{ directory.name }}</span>
+          </button>
+          <!-- Context Menu for Directory Buttons -->
+          <mat-menu #menuDirectory="matMenu">
+            <ng-template matMenuContent let-directory="directory">
+              <button
+                mat-menu-item
+                *ngIf="this.path[0] !== 'shared'"
+                (click)="removeDirectory(directory.name)"
+              >
+                <mat-icon> delete </mat-icon>Delete
+              </button>
+              <button
+                mat-menu-item
+                *ngIf="this.path[0] !== 'shared'"
+                (click)="openShareDialog(directory.name, false)"
+              >
+                <mat-icon> share </mat-icon>Share
+              </button>
+              <button
+                mat-menu-item
+                *ngIf="this.path[0] !== 'shared'"
+                (click)="openMoveDialog(directory.name, false)"
+              >
+                <mat-icon>drive_file_move</mat-icon> Move
+              </button>
+              <button
+                mat-menu-item
+                (click)="openCopyDialog(directory.name, false)"
+              >
+                <mat-icon>content_copy</mat-icon> Copy
+              </button>
+            </ng-template>
+          </mat-menu>
+        </div>
+      </div>
+
+      <!-- Files Section -->
+      <div *ngIf="files.length != 0">
+        <h2>Files</h2>
+        <div class="files">
+          <!-- Button for File -->
+          <button
+            mat-flat-button
+            class="file"
+            *ngFor="let file of files"
+            [matMenuTriggerFor]="menuFile"
+            [matMenuTriggerData]="{ file }"
+          >
+            <mat-icon> article </mat-icon>
+            <span>{{ file.name }}</span>
+          </button>
+          <!-- Contexte Menu for File Buttons -->
+          <mat-menu #menuFile="matMenu">
+            <ng-template matMenuContent let-file="file">
+              <button mat-menu-item (click)="getFile(file.name)">
+                <mat-icon> visibility </mat-icon> View
+              </button>
+              <button
+                mat-menu-item
+                (click)="downloadFile(file.name)"
+                id="download-btn"
+              >
+                <mat-icon> download </mat-icon> Download
+              </button>
+              <button
+                mat-menu-item
+                *ngIf="this.path[0] !== 'shared'"
+                (click)="removeFile(file.name)"
+              >
+                <mat-icon> delete </mat-icon>Delete
+              </button>
+              <button
+                mat-menu-item
+                *ngIf="this.path[0] !== 'shared'"
+                (click)="openShareDialog(file.name, true)"
+              >
+                <mat-icon> share </mat-icon>Share
+              </button>
+              <button
+                mat-menu-item
+                *ngIf="this.path[0] !== 'shared'"
+                (click)="openMoveDialog(file.name, true)"
+              >
+                <mat-icon>drive_file_move</mat-icon> Move
+              </button>
+              <button mat-menu-item (click)="openCopyDialog(file.name, true)">
+                <mat-icon>content_copy</mat-icon> Copy
+              </button>
+            </ng-template>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

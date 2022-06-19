@@ -1,0 +1,29 @@
+<div class="dialog">
+  <h2>Upload file</h2>
+  <form (ngSubmit)="this.onSubmit()" class="example-form">
+    <label for="file"></label>
+    <input
+      id="file"
+      (change)="this.onFileSelected($event)"
+      class="file-input"
+      name="directoryName"
+      type="file"
+    />
+    <button
+      *ngIf="!isNameRepeated"
+      type="submit"
+      class="submit-btn"
+      mat-flat-button
+      color="primary"
+    >
+      Upload file
+    </button>
+    <div *ngIf="isNameRepeated">
+      <p>Would you like to overwrite the directory?</p>
+      <button mat-button (click)="this.onSubmit(true)" color="primary">
+        Yes
+      </button>
+      <button mat-button (click)="this.closeDialog()" color="warn">No</button>
+    </div>
+  </form>
+</div>
