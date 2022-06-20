@@ -2,16 +2,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { SpaceAllocatorComponent } from './Components/space-allocator/space-allocator.component';
-import { LoginComponent } from './Components/login/login.component';
-import { DriveComponent } from './Components/drive/drive.component';
-import { AuthenticationGuard } from './Guards/authentication.guard';
+import { FileExplorerComponent } from './Components/file-explorer/file-explorer.component';
 
 const routes: Routes = [
   { path: '', component: SpaceAllocatorComponent},
   {
-    path: 'my-drive',
-    component: DriveComponent,
-    canActivate: [AuthenticationGuard],
+    path: 'fs-explorer',
+    component: FileExplorerComponent,
   },
 ];
 

@@ -214,29 +214,3 @@ def vv_copy_file():
         return make_response(jsonify(error), 409)
     resp = {"fileName": content["fileName"], "filePath": content["filePath"], "requestOverwrite": False}
     return make_response(jsonify(resp), 200)
-
-# Route to make a vv copy of a file
-@app.route('/files/vrcopy', methods=['POST'])
-def vr_copy_file():
-    """
-    Params:
-        filePath, fileName
-    response:
-    {
-        "fileName": String,
-        "filePath": String,
-    }
-    """
-    content = request.json
-    original_file_name = content["fileName"]
-    if not file_is_unique(content["destinyPath"], content["fileName"]):
-        i = 1
-        while not file_is_unique(content["destinyPath"], content["fileName"]):
-            content["fileName"] = content["fileName"] + f'({str(i)})'
-            i += 1
-    status = move_file(content["filePath"], content["fileName"], content["destinyPath"], True)
-    if not status:
-        error = {"message": "El archivo no puede ser copiado"}
-        return make_response(jsonify(error), 409)
-    resp = {"fileName": content["fileName"], "filePath": content["filePath"]}
-    return make_response(jsonify(resp), 200)

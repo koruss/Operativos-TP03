@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService } from '../../Services/authentication/authentication.service';
 import { DirectoryService } from '../../Services/directory/directory.service';
 import { DriveService } from '../../Services/drive/drive.service';
 import { FileService } from '../../Services/file/file.service';
@@ -11,30 +10,23 @@ import { CreateDirectoryComponent } from '../create-directory/create-directory.c
 import { CreateFileComponent } from '../create-file/create-file.component';
 import { UploadFileComponent } from '../upload-file/upload-file.component';
 import { saveAs } from 'file-saver';
-import { ShareComponent } from '../share/share.component';
 
 import Drive from '../../Models/drive.model';
 import Directory from '../../Models/directory.model';
 import File from '../../Models/file.model';
-import User from '../../Models/user.model';
-import Space from '../../Models/space.model';
 import { MoveComponent } from '../move/move.component';
 
-declare const FileSaver: any;
-
 @Component({
-  selector: 'app-drive',
-  templateUrl: './drive.component.html',
-  styleUrls: ['./drive.component.css'],
+  selector: 'app-file-explorer',
+  templateUrl: './file-explorer.component.html',
+  styleUrls: ['./file-explorer.component.css']
 })
-export class DriveComponent implements OnInit {
+export class FileExplorerComponent implements OnInit {
   path: string[] = [];
   files: File[] = [];
   directories: Directory[] = [];
   directory: Drive = {};
-  user: User = {};
   users: string[] = [];
-  space: Space = { usedSpace: 0, totalSpace: 1 };
 
   spacePercentage: number = 0;
 
@@ -44,23 +36,18 @@ export class DriveComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private routerService: Router,
-    private authenticationService: AuthenticationService,
     private dirService: DirectoryService,
     private driveService: DriveService,
     private fileService: FileService,
     private snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   async ngOnInit(): Promise<void> {
-    this.user = this.authenticationService.getUserInformation();
-    if (this.user.username != null) {
-      await this.getDir(this.user.username + '/root');
+      await this.getDir('root/');
       this.path.push('root');
       this.driveService.appendDirectoryToPath('root');
-      await this.getSpace(this.user.username);
-    }
+      //await this.getSpace(this.user.username);
   }
-
   /**
    *
    * @returns used percentage
@@ -71,47 +58,13 @@ export class DriveComponent implements OnInit {
     return percenatage;
   }
 
-  public isInShared(): boolean {
-    return this.path[1] === 'shared';
-  }
-
-  /**
-   * Ends session
-   * @returns void
-   */
-  public onClickLogout() {
-    this.user.allocatedBytes = 0;
-    this.user.password = '';
-    this.user.username = '';
-    this.authenticationService.setUserInformation(this.user);
-    this.driveService.setCurrentPath([]);
-    this.routerService.navigateByUrl('/');
-  }
-
-  /**
-   * Get Current path
-   * @returns current path
-   */
   public getCurrentPath() {
-    let path = this.user.username + '/';
+    var tmp_path = '';
     this.path.forEach((segment) => {
-      path = path.concat(segment + '/');
+      tmp_path = tmp_path.concat(segment + '/');
     });
-    return path;
-  }
-
-  /**
-   * Gets current space for the drive
-   * @returns void
-   */
-  public async getSpace(username: string) {
-    if (this.user.username != null) {
-      this.space = await this.driveService.getDriveSpace(this.user.username);
-      this.spacePercentage = this.getPercentageValue(
-        this.space.usedSpace,
-        this.space.totalSpace
-      );
-    }
+    console.log(tmp_path)
+    return tmp_path;
   }
 
   /**
@@ -121,11 +74,6 @@ export class DriveComponent implements OnInit {
     let dialogRef = this.dialog.open(FileViewComponent);
     dialogRef.componentInstance.file = file;
     dialogRef.componentInstance.path = this.path;
-    dialogRef.componentInstance.user = this.user;
-
-    dialogRef.afterClosed().subscribe(async () => {
-      await this.getSpace(this.user.username as string);
-    });
   }
 
   /**
@@ -165,7 +113,6 @@ export class DriveComponent implements OnInit {
         duration: 3000,
       });
       await this.getDir(this.getCurrentPath());
-      await this.getSpace(this.user.username as string);
     } catch (err: any) {
       console.log(err.error);
       const { message } = err.error;
@@ -189,7 +136,6 @@ export class DriveComponent implements OnInit {
       .subscribe(async (shouldDirectoriesGetRefreshed: boolean) => {
         if (shouldDirectoriesGetRefreshed) {
           await this.getDir(this.getCurrentPath());
-          await this.getSpace(this.user.username as string);
         }
       });
   }
@@ -207,21 +153,8 @@ export class DriveComponent implements OnInit {
       .subscribe(async (shouldDirectoriesGetRefreshed: boolean) => {
         if (shouldDirectoriesGetRefreshed) {
           await this.getDir(this.getCurrentPath());
-          await this.getSpace(this.user.username as string);
         }
       });
-  }
-
-  /**
-   * Open share dialog
-   * true for sharing files and false for sharing directories
-   * @returns void
-   */
-  public async openShareDialog(filename: any, type: boolean) {
-    let dialogRef = this.dialog.open(ShareComponent);
-    dialogRef.componentInstance.fileName = filename;
-    dialogRef.componentInstance.filePath = this.getCurrentPath();
-    dialogRef.componentInstance.type = type;
   }
 
   /**
@@ -232,7 +165,6 @@ export class DriveComponent implements OnInit {
     let dialogRef = this.dialog.open(MoveComponent);
     dialogRef.componentInstance.type = type;
     dialogRef.componentInstance.move = true;
-    dialogRef.componentInstance.user = this.user;
     dialogRef.componentInstance.file = filename;
     dialogRef.componentInstance.filePath = this.getCurrentPath();
 
@@ -249,13 +181,11 @@ export class DriveComponent implements OnInit {
     let dialogRef = this.dialog.open(MoveComponent);
     dialogRef.componentInstance.type = type;
     dialogRef.componentInstance.move = false;
-    dialogRef.componentInstance.user = this.user;
     dialogRef.componentInstance.file = filename;
     dialogRef.componentInstance.filePath = this.getCurrentPath();
 
     dialogRef.afterClosed().subscribe(async () => {
       await this.getDir(this.getCurrentPath());
-      await this.getSpace(this.user.username as string);
     });
   }
 
@@ -335,7 +265,6 @@ export class DriveComponent implements OnInit {
       .subscribe(async (shouldDirectoriesGetRefreshed: boolean) => {
         if (shouldDirectoriesGetRefreshed) {
           await this.getDir(this.getCurrentPath());
-          await this.getSpace(this.user.username as string);
         }
       });
   }
@@ -363,4 +292,5 @@ export class DriveComponent implements OnInit {
       });
     }
   }
+
 }

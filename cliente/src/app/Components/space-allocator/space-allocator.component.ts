@@ -6,6 +6,7 @@ import { FileSystemService } from 'src/app/Services/file-system/file-system.serv
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 
+import FsChecker from 'src/app/Models/fs-checker';
 import FileSystem from 'src/app/Models/file-system';
 
 @Component({
@@ -14,10 +15,14 @@ import FileSystem from 'src/app/Models/file-system';
   styleUrls: ['./space-allocator.component.css']
 })
 export class SpaceAllocatorComponent implements OnInit {
+  public hasFS: FsChecker = {
+    fs_exists: false,
+  }
   public fileSystem: FileSystem = {
     sector_size: 0,
     sector_amount: 0,
   };
+
 
   public sectorAmntControl: FormControl = new FormControl('', [
     Validators.required,
@@ -34,9 +39,29 @@ export class SpaceAllocatorComponent implements OnInit {
     private fileSystemService: FileSystemService
   ) { }
 
-  ngOnInit(): void {
-    console.log(this.fileSystemService.fsExists());
-    // var exists = this.fileSystemService.fsExists();
+  public async ngOnInit(): Promise<void> {
+    const fsExists = await this.checkFS();
+    if(fsExists){
+      console.log("navego al fs")
+      this.router.navigateByUrl('/fs-explorer');
+    }
+  }
+
+  public async checkFS(): Promise<boolean> {
+    try{
+      this.hasFS = await this.fileSystemService.fsExists(this.hasFS);
+      if(this.hasFS.fs_exists){
+        return true;
+      }
+      return false;
+    } catch (err: any) {
+      const { message } = err.error;
+      this.snackBar.open(message, 'Close', {
+        verticalPosition: 'top',
+        duration: 3000,
+      });
+      return false;
+    }
   }
 
   public async onSubmitClick(): Promise<void> {
@@ -62,7 +87,7 @@ export class SpaceAllocatorComponent implements OnInit {
         duration: 3000,
       });
       this.dialog.closeAll();
-      this.router.navigateByUrl('/my-drive');
+      this.router.navigateByUrl('/fs-explorer');
     } catch (err: any) {
       const { message } = err.error;
       this.snackBar.open(message, 'Close', {

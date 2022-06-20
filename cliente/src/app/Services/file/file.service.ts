@@ -22,13 +22,13 @@ export class FileService {
     content: string;
     forceOverwrite: boolean;
   }): Promise<any> {
-    return lastValueFrom(this.httpClient.post<any>('/api/files', fileData));
+    return lastValueFrom(this.httpClient.post<any>('/api/file', fileData));
   }
 
   public getFile(path: string, fileName: string): Promise<any> {
     return lastValueFrom(
       this.httpClient.get(
-        '/api/files?filePath=' +
+        '/api/file?filePath=' +
           path +
           '&fileName=' +
           fileName +
@@ -38,12 +38,12 @@ export class FileService {
   }
 
   public modifyFile(file: any): Promise<any> {
-    return lastValueFrom(this.httpClient.post('/api/files/modify', file));
+    return lastValueFrom(this.httpClient.post('/api/file/modify', file));
   }
 
   public deleteFile(file: any): Promise<any> {
     return lastValueFrom(
-      this.httpClient.delete('/api/files', {
+      this.httpClient.delete('/api/file', {
         body: file,
         headers: { 'Content-Type': 'application/json' },
       })
@@ -51,11 +51,11 @@ export class FileService {
   }
 
   public moveFile(file: any): Promise<any> {
-    return lastValueFrom(this.httpClient.post('/api/files/move', file));
+    return lastValueFrom(this.httpClient.post('/api/file/move', file));
   }
 
   public copyFile(file: any): Promise<any> {
-    return lastValueFrom(this.httpClient.post('/api/files/vvcopy', file));
+    return lastValueFrom(this.httpClient.post('/api/file/vvcopy', file));
   }
 
   public shareFile(file: any): Promise<any> {

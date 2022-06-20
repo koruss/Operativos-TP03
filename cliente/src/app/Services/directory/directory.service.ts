@@ -14,7 +14,7 @@ export class DirectoryService {
    * @returns The response from the API
    */
   public getDir(path: string): Promise<any> {
-    return lastValueFrom(this.httpClient.get('/api/dirs?dirPath=' + path));
+    return lastValueFrom(this.httpClient.get('/api/dir?dirPath=' + path));
   }
 
   /**
@@ -30,12 +30,12 @@ export class DirectoryService {
     forceOverwrite: boolean
   ): Promise<any> {
     return lastValueFrom(
-      this.httpClient.post('/api/dirs', { dirName, newDirPath, forceOverwrite })
+      this.httpClient.post('/api/dir', { dirName, newDirPath, forceOverwrite })
     );
   }
 
   deleteDir(dir: { dirPath: string; dirName: any; }) {
-    return lastValueFrom(this.httpClient.delete('/api/dirs',{"body":dir,"headers":{"Content-Type":"application/json"}}));
+    return lastValueFrom(this.httpClient.delete('/api/dir',{"body":dir,"headers":{"Content-Type":"application/json"}}));
   }
 
   public shareDir(dir: any): Promise<any> {

@@ -6,7 +6,6 @@ import { DriveService } from '../../Services/drive/drive.service';
 
 
 import Directory from '../../Models/directory.model';
-import User from '../../Models/user.model';
 import Drive from '../../Models/drive.model';
 
 
@@ -20,7 +19,6 @@ import Drive from '../../Models/drive.model';
 export class MoveComponent implements OnInit {
   path: string[] = [];
   directories: Directory[] = [];
-  user: User = {};
   directory: Drive = {};
   file: string = "{}";
   filePath: string = "{}";
@@ -35,22 +33,17 @@ export class MoveComponent implements OnInit {
     private driveService: DriveService,) { }
 
   async ngOnInit(): Promise<void> {
-    if (this.user.username != null) {
-      await this.getDir(this.user.username + '/root');
+      await this.getDir('root/');
       this.path.push('root');
-    }
   }
 
-  /**
-   * Get Current path
-   * @returns current path
-   */
-   public getCurrentPath() {
-    let path = this.user.username + '/';
+  public getCurrentPath() {
+    var tmp_path = '';
     this.path.forEach((segment) => {
-      path = path.concat(segment + '/');
+      tmp_path = tmp_path.concat(segment + '/');
     });
-    return path;
+    console.log(tmp_path)
+    return tmp_path;
   }
 
   /**

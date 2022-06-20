@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { DirectoryService } from '../../Services/directory/directory.service';
 import { DriveService } from '../../Services/drive/drive.service';
-import { AuthenticationService } from '../../Services/authentication/authentication.service';
 
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -23,7 +22,6 @@ export class CreateDirectoryComponent implements OnInit {
   constructor(
     private directoryService: DirectoryService,
     private driveService: DriveService,
-    private authService: AuthenticationService,
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<CreateDirectoryComponent>
   ) {}
@@ -36,9 +34,7 @@ export class CreateDirectoryComponent implements OnInit {
     try {
       if (!this.directoryName) return;
       // Build request path
-      const currentDirectoryPath = `${
-        this.authService.getUserInformation().username
-      }/${this.driveService.getCurrentPath().join('/')}`;
+      const currentDirectoryPath = `${this.driveService.getCurrentPath().join('/')}`;
       // Create directory
       await this.directoryService.createDirectory(
         this.directoryName,

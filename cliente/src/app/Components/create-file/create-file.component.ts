@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { FileService } from '../../Services/file/file.service';
 import { DriveService } from '../../Services/drive/drive.service';
-import { AuthenticationService } from '../../Services/authentication/authentication.service';
 
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -28,7 +27,6 @@ export class CreateFileComponent implements OnInit {
   constructor(
     private fileService: FileService,
     private driveService: DriveService,
-    private authService: AuthenticationService,
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<CreateFileComponent>
   ) {}
@@ -39,9 +37,10 @@ export class CreateFileComponent implements OnInit {
     try {
       if (!this.fileName || !this.fileExtension) return;
       // Build request path
-      const currentDirectoryPath = `${
-        this.authService.getUserInformation().username
-      }/${this.driveService.getCurrentPath().join('/')}`;
+      let currentDirectoryPath = `${this.driveService.getCurrentPath().join('/')}`;
+      if(currentDirectoryPath === ''){
+        currentDirectoryPath = "root/";
+      }
       await this.fileService.createFile({
         filePath: currentDirectoryPath,
         extension: this.fileExtension,
@@ -49,7 +48,7 @@ export class CreateFileComponent implements OnInit {
         content: '',
         forceOverwrite,
       });
-      this.snackBar.open('File created!', 'Close', {
+      this.snackBar.open('Archivo creado', 'Close', {
         verticalPosition: 'top',
         duration: 3000,
       });

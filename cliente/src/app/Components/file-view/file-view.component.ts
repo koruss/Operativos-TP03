@@ -3,7 +3,6 @@ import { FileService } from 'src/app/Services/file/file.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import File from 'src/app/Models/file.model';
-import User from 'src/app/Models/user.model';
 
 @Component({
   selector: 'app-file-view',
@@ -13,7 +12,6 @@ import User from 'src/app/Models/user.model';
 export class FileViewComponent implements OnInit {
   file : File = {};
   path : string[] = []; 
-  user : User = {};
 
   constructor(
     private snackBar: MatSnackBar,
@@ -22,16 +20,12 @@ export class FileViewComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  /**
-   * Get Current path
-   * @returns current path
-   */
-   public getCurrentPath(){
-    let path = this.user.username + '/';
-    this.path.forEach(segment => {
-      path = path.concat(segment+'/');
+  public getCurrentPath() {
+    var tmp_path = '';
+    this.path.forEach((segment) => {
+      tmp_path = tmp_path.concat(segment + '/');
     });
-    return path;
+    return tmp_path;
   }
 
   /**
@@ -46,7 +40,7 @@ export class FileViewComponent implements OnInit {
                        };
                        console.log(modifiedFile);
       await this.fileService.modifyFile(modifiedFile);
-      this.snackBar.open("File updated correctly", 'Close', {
+      this.snackBar.open("Archivo actualizado", 'Cerrar', {
         verticalPosition: 'top',
         duration: 3000,
       });

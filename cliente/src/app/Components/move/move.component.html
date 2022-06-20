@@ -3,7 +3,7 @@
     <button class="back-btn" (click)="onClickChangeDirBackward()">
       <mat-icon>keyboard_backspace</mat-icon>
     </button>
-    <h2>{{ directory.name === "root" ? "My Drive" : directory.name }}</h2>
+    <h2>{{ directory.name }}</h2>
   </div>
   <div class="drives">
     <div *ngIf="directories.length != 0" class="drives">
@@ -25,7 +25,7 @@
       color="primary"
       (click)="OnClickMove()"
     >
-      Move Here
+      Mover aquí
     </button>
     <button
       *ngIf="!move"
@@ -33,7 +33,7 @@
       color="primary"
       (click)="OnClickCopy()"
     >
-      Copy Here
+      Copiar aquí
     </button>
   </div>
 </div>

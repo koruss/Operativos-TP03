@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FileService } from '../../Services/file/file.service';
 import { DriveService } from '../../Services/drive/drive.service';
-import { AuthenticationService } from '../../Services/authentication/authentication.service';
 
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -18,7 +17,6 @@ export class UploadFileComponent implements OnInit {
   constructor(
     private fileService: FileService,
     private driveService: DriveService,
-    private authService: AuthenticationService,
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<UploadFileComponent>
   ) {}
@@ -29,9 +27,7 @@ export class UploadFileComponent implements OnInit {
     try {
       if (!this.selectedFile) return;
       // Build file path
-      const filePath = `${
-        this.authService.getUserInformation().username
-      }/${this.driveService.getCurrentPath().join('/')}`;
+      const filePath = `${this.driveService.getCurrentPath().join('/')}`;
       // Get file content
       const content = await this.selectedFile?.text();
       // Get file extension

@@ -9,26 +9,11 @@ import FsChecker from 'src/app/Models/fs-checker';
   providedIn: 'root'
 })
 export class FileSystemService {
-  // private fsInfo: FileSystem= {
-  //   sector_size: 0,
-  //   sector_amount: 0,
-  // }
-  public fsChecker: FsChecker = {
-    fs_exists: false,
-  };
 
   constructor(private httpClient: HttpClient) { }
+  public async fsExists(hasFS: FsChecker): Promise<FsChecker>{
+    return lastValueFrom(this.httpClient.post('/api/fs/check', hasFS));
 
-  async fsExists(): Promise<boolean>{
-    this.httpClient.post('/api/fs/check', null).subscribe(data => {
-      this.fsChecker = data;
-    },
-      error => {
-        console.log(error);
-      });
-    console.log("sexo2");
-    console.log(this.fsChecker.fs_exists);
-    return this.fsChecker.fs_exists; 
   }
 
   public createFS(fsInfo: FileSystem): Promise<FileSystem> {
