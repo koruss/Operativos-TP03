@@ -13,9 +13,10 @@ import { UploadFileComponent } from './Components/upload-file/upload-file.compon
 import { MoveComponent } from './Components/move/move.component';
 import { SpaceAllocatorComponent } from './Components/space-allocator/space-allocator.component';
 import { FileExplorerComponent } from './Components/file-explorer/file-explorer.component';
+import { SearchComponent } from './Components/search/search.component';
 
 @NgModule({
-  declarations: [AppComponent,  FileViewComponent, CreateDirectoryComponent, CreateFileComponent, UploadFileComponent, MoveComponent, SpaceAllocatorComponent, FileExplorerComponent],
+  declarations: [AppComponent,  FileViewComponent, CreateDirectoryComponent, CreateFileComponent, UploadFileComponent, MoveComponent, SpaceAllocatorComponent, FileExplorerComponent, SearchComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

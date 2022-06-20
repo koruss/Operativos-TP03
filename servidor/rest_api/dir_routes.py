@@ -1,7 +1,7 @@
 # Imports
 from rest_api import app
 from flask import request, jsonify, make_response
-from storage_manager.file_manager import get_directory, mkdir, is_unique_dir, rm_dir, move_directory
+from storage_manager.file_manager import get_directory, mkdir, is_unique_dir, rm_dir, move_directory, copy_directory_by_name
 from flask_expects_json import expects_json
 
 post_dir_body= {
@@ -171,7 +171,7 @@ def vv_copy_dir_req():
     if not is_unique_dir(content["destinyPath"], content["dirName"]) and not content["forceOverwrite"]:
         error = {"message": "El directorio seleccionado ya existe en la ruta especificada", "requestOverwrite": True}
         return make_response(jsonify(error), 409)
-    status = True
+    status = copy_directory_by_name(content["dirPath"], content["dirName"], content["destinyPath"])
     if not status:
         error = {"message": "No es posible copiar el directorio", "requestOverwrite": False}
         return make_response(jsonify(error), 409)

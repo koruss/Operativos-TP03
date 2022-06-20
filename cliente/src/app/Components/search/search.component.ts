@@ -17,11 +17,11 @@ import File from '../../Models/file.model';
 import { MoveComponent } from '../move/move.component';
 
 @Component({
-  selector: 'app-file-explorer',
-  templateUrl: './file-explorer.component.html',
-  styleUrls: ['./file-explorer.component.css']
+  selector: 'app-search',
+  templateUrl: './search.component.html',
+  styleUrls: ['./search.component.css']
 })
-export class FileExplorerComponent implements OnInit {
+export class SearchComponent implements OnInit {
   path: string[] = [];
   files: File[] = [];
   directories: Directory[] = [];
@@ -35,6 +35,7 @@ export class FileExplorerComponent implements OnInit {
   currentDirectory: string = '';
   directoryClicks: number = 0;
 
+
   constructor(
     private dialog: MatDialog,
     private routerService: Router,
@@ -44,20 +45,16 @@ export class FileExplorerComponent implements OnInit {
     private snackBar: MatSnackBar
   ) { }
 
-  async ngOnInit(): Promise<void> {
+  async ngOnInit(): Promise<void>{
       await this.getDir('root/');
       this.path.push('root');
       this.driveService.appendDirectoryToPath('root');
-      //await this.getSpace(this.user.username);
   }
 
-  public searchClicked(){
-      this.routerService.navigateByUrl('/search');
+  public backClicked(){
+      this.routerService.navigateByUrl('/fs-explorer');
   }
-  /**
-   *
-   * @returns used percentage
-   */
+
   public getPercentageValue(usedSpace: any, totalSpace: any) {
     let percenatage = (usedSpace * 100) / totalSpace;
 

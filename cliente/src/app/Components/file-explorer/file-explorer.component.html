@@ -2,7 +2,7 @@
   <main>
     <div class="top-deck">
       <!-- Add Button-->
-      <button mat-flat-button [matMenuTriggerFor]="menu" class="mat-fab mat-primary create">
+      <button mat-flat-button [matMenuTriggerFor]="menu" class="mat-fab mat-primary">
         <mat-icon> add_box </mat-icon>
       </button>
       <mat-menu #menu="matMenu">
@@ -19,12 +19,9 @@
           <mat-icon>drive_folder_upload</mat-icon> Subir Carpeta
         </button> -->
       </mat-menu>
-      <!-- Search bar -->
-      <mat-form-field appearance="outline" class="search-bar">
-        <mat-label>Search on drive</mat-label>
-        <input matInput />
-        <mat-icon matPrefix>search</mat-icon>
-      </mat-form-field>
+      <button mat-flat-button class="mat-fab mat-primary" (click)="this.searchClicked()">
+        <mat-icon> search </mat-icon>
+      </button>
     </div>
 
     <!-- Path Display -->

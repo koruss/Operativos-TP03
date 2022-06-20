@@ -272,6 +272,11 @@ def move_file_by_name(directory, name, newDirectory, isCopy):
             return sizeDif
     return 0
 
+
+
+
+
+
 def move_directory_by_name(directory, name, newDirectory, isCopy):
     for i, subDir in enumerate(directory["directories"]):
         if subDir["name"] == name:
@@ -283,3 +288,46 @@ def move_directory_by_name(directory, name, newDirectory, isCopy):
                 sizeDif = recurse_size_of_directory(subDir) - sizeDif
             return sizeDif
     return 0
+
+
+
+def copy_all_files_directory(directory):
+    for file in directory["files"]:
+        copy = file
+        copy["virtual_location"] = insert_virtual_disk(copy["content"])
+    return 
+
+def recursive_cpy_files_vdisk(directory):
+    if len(directory["directories"]) == 0:
+        return copy_all_files_directory(directory)
+    else:
+        for subDir in directory["directories"]:
+            recursive_cpy_files_vdisk(subDir)
+        copy_all_files_directory(directory)
+        return 
+
+
+def copy_directory_by_name(path, name, newPath):
+    folders = path.split("/")
+    newFolders = newPath.split("/")
+    jsonObject = read_from_json()
+    directory = get_content_from_path(folders, jsonObject)
+    newDirectory = get_content_from_path(newFolders, jsonObject)
+    for i, subDir in enumerate(directory["directories"]):
+        if subDir["name"] == name:
+            sizeDif = recurse_size_of_directory(subDir)
+            if  (jsonObject["total_space"] - jsonObject["used_space"]- sizeDif ) >= 0:
+                recursive_cpy_files_vdisk(subDir)
+                newDirectory["directories"].append(subDir)
+                addSpace(jsonObject, sizeDif)
+                write_to_json(jsonObject)
+                return True
+            else:
+                return False
+    
+    return False
+    
+
+
+    
+

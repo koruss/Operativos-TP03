@@ -7,15 +7,18 @@
   </div>
   <div class="drives">
     <div *ngIf="directories.length != 0" class="drives">
+      <div *ngFor="let dir of directories;">
       <button
+        *ngIf="dir.name !== directory.name"
         mat-flat-button
-        *ngFor="let dir of directories"
         class="drive-btn"
         (click)="onClickChangeDirForward(dir.name)"
       >
         <mat-icon>folder</mat-icon>
         &nbsp; {{ dir.name }}
       </button>
+
+      </div>
     </div>
   </div>
   <div class="footer">
