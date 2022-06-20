@@ -9,9 +9,6 @@
 # ╲╱▔╲▂▂▂▂╱▔╲▂▂▂╱
 #  ▏╳▕▇▇▕ ▏╳▕▇▇▕
 #  ╲▂╱╲▂╱ ╲▂╱
-
-
-
 space_available = 0
 
 def Convert(string):
@@ -25,7 +22,8 @@ def create_virtual_disk(sectors, sectors_size):
     with open('virtualDisk', "w", encoding='UTF-8') as f:
         for i in range(sectors):
             f.write("♣" * sectors_size)
-            f.write("\n")
+            if (i != sectors-1):
+                f.write("\n")
         f.close();
     space_available = sectors * sectors_size
 
@@ -83,7 +81,7 @@ def delete_data_virtual_disk(dictionary):
     for key in list_of_keys:
         places = dictionary[key]
         for place in places:
-            matrix[key][place] = '♣'
+            matrix[int(key)][place] = '♣'
 
     with open('virtualDisk', "w", encoding='UTF-8') as file:
         for line in matrix:

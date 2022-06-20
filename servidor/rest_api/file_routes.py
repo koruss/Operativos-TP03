@@ -3,11 +3,11 @@ from rest_api import app
 from flask import request, jsonify, make_response
 from flask_expects_json import expects_json
 from storage_manager.file_manager import file_is_unique, mk_file, rm_file, modify_file, \
-    get_file, get_file_info, move_file, space_available_file
+    get_file_unique, get_file_info, move_file, space_available_file, space_available_existing_file
 
 # Request schemas
 
-post_file_req_schema = {
+post_file_body = {
     "type": "object",
     "properties": {
         "filePath": {"type": "string"},
@@ -19,7 +19,7 @@ post_file_req_schema = {
     "required": ["filePath", "newFileName", "extension", "content", "forceOverwrite"]
 }
 
-post_modify_file_req_schema = {
+post_modify_file_body = {
     "type": "object",
     "properties": {
         "filePath": {"type": "string"},
@@ -29,7 +29,7 @@ post_modify_file_req_schema = {
     "required": ["filePath", "fileName", "content"]
 }
 
-post_move_file_req_schema = {
+post_move_file_body = {
     "type": "object",
     "properties": {
         "filePath": {"type": "string"},
@@ -40,7 +40,7 @@ post_move_file_req_schema = {
     "required": ["filePath", "fileName", "destinyPath", "forceOverwrite"]
 }
 
-delete_file_req_schema = {
+delete_file_body = {
     "type": "object",
     "properties": {
         "filePath": {"type": "string"},
@@ -49,18 +49,7 @@ delete_file_req_schema = {
     "required": ["filePath", "fileName"]
 }
 
-post_share_file_req_schema = {
-    "type": "object",
-    "properties": {
-        "filePath": {"type": "string"},
-        "fileName": {"type": "string"},
-        "destinyUsername": {"type": "string"},
-        "forceOverwrite": {"type": "boolean"}
-    },
-    "required": ["filePath", "fileName", "destinyUsername", "forceOverwrite"]
-}
-
-post_vv_copy_file_req_schema = {
+post_vv_copy_file_body = {
     "type": "object",
     "properties": {
         "filePath": {"type": "string"},
@@ -71,10 +60,9 @@ post_vv_copy_file_req_schema = {
     "required": ["filePath", "fileName", "destinyPath", "forceOverwrite"]
 }
 
-
 # Routes
 # Route to get properties or content of a file
-@app.route('/files', methods=['GET'])
+@app.route('/file', methods=['GET'])
 def get_file():
     """
     Params:
@@ -94,30 +82,29 @@ def get_file():
     """
     file_path = request.args.get('filePath')
     if file_path is None:
-        error = {"message": "Given URL has no directory path parameter"}
+        error = {"message": "La dirección proporcionada no tiene el parámetro path"}
         return make_response(jsonify(error), 408)
     file_name = request.args.get('fileName')
     if file_name is None:
-        error = {"message": "Given URL has no file name parameter"}
+        error = {"message": "La dirección proporcionada no tiene el parámetro fileName"}
         return make_response(jsonify(error), 408)
     content = request.args.get('contentOnly')
     if content is None:
-        error = {"message": "Given URL has no content only parameter"}
+        error = {"message": "La dirección proporcionada no tiene el parámetro contentOnly"}
         return make_response(jsonify(error), 408)
     if content == "true":
-        resp = get_file(file_path, file_name)
+        resp = get_file_unique(file_path, file_name)
         resp = None if resp == "" else {"content": resp}
     else:
         resp = get_file_info(file_path, file_name)
     if resp is None:
-        error = {"message": "The given file doesn't exist"}
+        error = {"message": "El archivo proporcionado no existe"}
         return make_response(jsonify(error), 408)
     return make_response(jsonify(resp), 200)
 
-
 # Route to create a file
-@app.route('/files', methods=['POST'])
-@expects_json(post_file_req_schema)
+@app.route('/file', methods=['POST'])
+@expects_json(post_file_body)
 def post_file():
     """
     response:
@@ -129,23 +116,22 @@ def post_file():
     """
     content = request.json
     if not file_is_unique(content["filePath"], content["newFileName"]) and not content["forceOverwrite"]:
-        error = {"message": "The given file name already exists", "requestOverwrite": True}
+        error = {"message": "Ese archivo ya existe", "requestOverwrite": True}
         return make_response(jsonify(error), 409)
     if not space_available_file(content["filePath"], content["content"]):
-        error = {"message": "Sufficient space isn't available in Drive", "requestOverwrite": False}
+        error = {"message": "No hay suficiente espacio en el disco", "requestOverwrite": False}
         return make_response(jsonify(error), 409)
     status = mk_file(content["filePath"], content["newFileName"], content["extension"], content["content"])
     if not status:
-        error = {"message": "The given file name is invalid, please try another", "requestOverwrite": False}
+        error = {"message": "El nombre proporcionado es inválido", "requestOverwrite": False}
         return make_response(jsonify(error), 409)
     resp = {"fileName": content["newFileName"], "filePath": content["filePath"], "requestOverwrite": False}
     return make_response(jsonify(resp), 200)
 
-
 # Route to move a file
-@app.route('/files/move', methods=['POST'])
-@expects_json(post_move_file_req_schema)
-def move_file():
+@app.route('/file/move', methods=['POST'])
+@expects_json(post_move_file_body)
+def move_file_req():
     """
     response:
     {
@@ -155,21 +141,20 @@ def move_file():
     }
     """
     content = request.json
-    if not file_is_unique(content["filePath"], content["fileName"]) and not content["forceOverwrite"]:
-        error = {"message": "Another file already exists at destination with the same name", "requestOverwrite": True}
+    if not file_is_unique(content["destinyPath"], content["fileName"]) and not content["forceOverwrite"]:
+        error = {"message": "Ya se encuentra un archivo con ese nombre en la direccion proporcionada", "requestOverwrite": True}
         return make_response(jsonify(error), 409)
     status = move_file(content["filePath"], content["fileName"], content["destinyPath"])
     if not status:
-        error = {"message": "The file could not be moved", "requestOverwrite": False}
+        error = {"message": "El archivo no se puede mover", "requestOverwrite": False}
         return make_response(jsonify(error), 409)
     resp = {"fileName": content["fileName"], "filePath": content["filePath"], "requestOverwrite": False}
     return make_response(jsonify(resp), 200)
 
-
 # Route to modify a file
-@app.route('/files/modify', methods=['POST'])
-@expects_json(post_modify_file_req_schema)
-def modify_file():
+@app.route('/file/modify', methods=['POST'])
+@expects_json(post_modify_file_body)
+def update_file():
     """
     response:
     {
@@ -178,20 +163,19 @@ def modify_file():
     }
     """
     content = request.json
-    if not space_available_file(content["filePath"], content["content"]):
-        error = {"message": "Sufficient space isn't available in Drive", "requestOverwrite": False}
+    if not space_available_existing_file(content["filePath"], content["fileName"], content["content"]):
+        error = {"message": "No hay campo suficiente en memoria", "requestOverwrite": False}
         return make_response(jsonify(error), 409)
     status = modify_file(content["filePath"], content["fileName"], content["content"])
     if not status:
-        error = {"message": "The given file could not be modified"}
+        error = {"message": "El archivo proporcionado no puede ser modificado"}
         return make_response(jsonify(error), 409)
     resp = {"fileName": content["fileName"], "path": content["filePath"]}
     return make_response(jsonify(resp), 200)
 
-
 # Route to delete an existing file
-@app.route('/files', methods=['DELETE'])
-@expects_json(delete_file_req_schema)
+@app.route('/file', methods=['DELETE'])
+@expects_json(delete_file_body)
 def delete_file():
     """
     response:
@@ -203,45 +187,14 @@ def delete_file():
     content = request.json
     status = rm_file(content["filePath"], content["fileName"])
     if not status:
-        error = {"message": "The file doesn't exist"}
+        error = {"message": "El archivo no existe"}
         return make_response(jsonify(error), 408)
     resp = {"fileName": content["fileName"], "path": content["filePath"]}
     return make_response(jsonify(resp), 200)
 
-
-# Route to share a file with another user
-# @app.route('/files/share', methods=['POST'])
-# @expects_json(post_share_file_req_schema)
-# def share_file():
-#     """
-#     response:
-#     {
-#         "destinyUsername": String,
-#         "sharedFileName": String
-
-#     }
-#     """
-#     content = request.json
-#     if not fileIsUnique(content["destinyUsername"] + "/shared", content["fileName"]) and not content["forceOverwrite"]:
-#         error = {"message": "Another file already exists at the shared folder of target user",
-#                  "requestOverwrite": True}
-#         return make_response(jsonify(error), 409)
-#     if not spaceAvailableShareFile(content["destinyUsername"], content["filePath"], content["fileName"]):
-#         error = {"message": "Sufficient space isn't available in target user shared directory",
-#                  "requestOverwrite": False}
-#         return make_response(jsonify(error), 409)
-#     status = shareFile(content["filePath"], content["fileName"], content["destinyUsername"])
-#     if not status:
-#         error = {"message": "The file could not be shared", "requestOverwrite": False}
-#         return make_response(jsonify(error), 409)
-#     resp = {"destinyUsername": content["destinyUsername"], "sharedFileName": content["fileName"],
-#             "requestOverwrite": False}
-#     return make_response(jsonify(resp), 200)
-
-
 # Route to make a vv copy of a file
-@app.route('/files/vvcopy', methods=['POST'])
-@expects_json(post_vv_copy_file_req_schema)
+@app.route('/file/vvcopy', methods=['POST'])
+@expects_json(post_vv_copy_file_body)
 def vv_copy_file():
     """
     response:
@@ -253,15 +206,14 @@ def vv_copy_file():
     """
     content = request.json
     if not file_is_unique(content["destinyPath"], content["fileName"]) and not content["forceOverwrite"]:
-        error = {"message": "The given file name already exists at target location", "requestOverwrite": True}
+        error = {"message": "Ese archivo ya existe at target location", "requestOverwrite": True}
         return make_response(jsonify(error), 409)
     status = move_file(content["filePath"], content["fileName"], content["destinyPath"], True)
     if not status:
-        error = {"message": "The file could not be copied", "requestOverwrite": False}
+        error = {"message": "El archivo no puede ser copiado", "requestOverwrite": False}
         return make_response(jsonify(error), 409)
     resp = {"fileName": content["fileName"], "filePath": content["filePath"], "requestOverwrite": False}
     return make_response(jsonify(resp), 200)
-
 
 # Route to make a vv copy of a file
 @app.route('/files/vrcopy', methods=['POST'])
@@ -284,7 +236,7 @@ def vr_copy_file():
             i += 1
     status = move_file(content["filePath"], content["fileName"], content["destinyPath"], True)
     if not status:
-        error = {"message": "The file could not be copied"}
+        error = {"message": "El archivo no puede ser copiado"}
         return make_response(jsonify(error), 409)
     resp = {"fileName": content["fileName"], "filePath": content["filePath"]}
     return make_response(jsonify(resp), 200)

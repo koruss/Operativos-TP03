@@ -3,7 +3,7 @@ from flask import request, jsonify, make_response
 from flask_expects_json import expects_json
 from storage_manager.fs_manager import create_fs, file_exists, get_space_info
 
-post_info_fs= {
+post_fs_info_body= {
 	"type": "object",
 	"properties": {
 		"sector_size": {"type": "number"},
@@ -13,15 +13,15 @@ post_info_fs= {
 }
 
 @app.route('/fs/check', methods=['POST'])
-def post_root():
+def post_root_req():
 	exists = file_exists()
 	resp = {"fs_exists": exists}
 	return make_response(jsonify(resp), 200)
 
 # Crea los archivos de FS necesarios para que la progra funcione.
 @app.route('/fs/create', methods=['POST'])
-@expects_json(post_info_fs)
-def post_drive():
+@expects_json(post_fs_info_body)
+def post_drive_info_req():
 	"""
 	{
 		"sector_size": Number,
